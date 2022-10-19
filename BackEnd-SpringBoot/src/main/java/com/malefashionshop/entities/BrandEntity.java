@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,5 +21,12 @@ public class BrandEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "brand")
     private List<ProductEntity> products = new ArrayList<>();
+
+    @PreRemove
+    private void preRemove() {
+        this.products.forEach(product->{
+            product.setBrand(null);
+        });
+    }
 
 }

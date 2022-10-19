@@ -2,9 +2,11 @@ package com.malefashionshop.controller;
 
 import com.malefashionshop.dto.request.CategoryUpdateDto;
 import com.malefashionshop.dto.response.CategoryResponseDto;
+import com.malefashionshop.dto.response.ResponseDto;
 import com.malefashionshop.service.impl.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -39,9 +41,8 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
-    public HttpStatus deletePost(@PathVariable Long id) {
-        this.categoryService.deleteCategory(id);
-        return HttpStatus.OK;
+    public ResponseEntity<ResponseDto> deleteCategory(@PathVariable Long id) {
+        return this.categoryService.deleteCategory(id);
     }
 
 }

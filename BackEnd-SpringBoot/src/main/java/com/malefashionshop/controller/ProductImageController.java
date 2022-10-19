@@ -31,44 +31,20 @@ public class ProductImageController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<UploadImageResponseDto> uploadFiles(@RequestParam(name = "productID", required = false) Long productID,
+    public ResponseEntity<UploadImageResponseDto> saveImages(@RequestParam(name = "productID", required = false) Long productID,
                                                               @RequestParam("files") MultipartFile[] files) {
-        return imagesStorageService.saveImages(files, productID);
+        return imagesStorageService.createImages(files, productID);
     }
 
-//    @PostMapping("/uploadOne")
-//    public ProductImageResponseDto uploadOneFile(@RequestParam(name = "productID") Long productID,
-//                                                              @RequestParam("file") File file) {
-//        return imagesStorageService.saveOneImage(file, productID);
-//    }
-
     @GetMapping("/product/{productId}")
-    public ResponseEntity<List<ProductImageResponseDto>> getListFiles(@PathVariable Long productId) {
-        return imagesStorageService.loadAllByProductID(productId);
+    public ResponseEntity<List<ProductImageResponseDto>> getImagesByProductID(@PathVariable Long productId) {
+        return imagesStorageService.getAllImagesByProductID(productId);
     }
 
     @PutMapping("/{productImageID}")
-    public ResponseEntity<ProductImageResponseDto> updateImages(@PathVariable("productImageID") Long productImageID, @RequestBody ProductImageUpdateDto productImageUpdateDto){
-        return this.imagesStorageService.updateImages(productImageID, productImageUpdateDto);
+    public ResponseEntity<ProductImageResponseDto> updateImages(@PathVariable("productImageID") Long productImageID,
+                                                                @RequestBody ProductImageUpdateDto productImageUpdateDto){
+        return this.imagesStorageService.updateImage(productImageID, productImageUpdateDto);
     }
 
-//    @GetMapping("/files/{filename:.+}")
-//    public ResponseEntity<Resource> getFile(@PathVariable String filename) {
-//        Resource file = imagesStorageService.load(filename);
-//        return ResponseEntity.ok()
-//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
-//    }
-
-//    @PostMapping("/upload-files")
-//    public String uploadImage(@RequestParam("file") MultipartFile file) throws Exception{
-//        System.out.println(file.getOriginalFilename());
-//        System.out.println(file.getName());
-//        System.out.println(file.getContentType());
-//        System.out.println(file.getSize());
-//
-//        String Path_Directtory = "E:\\Cong_Viec\\2022-2023\\NashTech\\The Rookies\\Individual Project\\MaleFashionWebsite_React_SpringBoot\\BackEnd-SpringBoot\\src\\main\\resources\\images\\productImages";
-//        Files.copy(file.getInputStream(), Paths.get(Path_Directtory + File.separator + file.getOriginalFilename()), StandardCopyOption.REPLACE_EXISTING);
-//
-//        return "Successful";
-//    }
 }

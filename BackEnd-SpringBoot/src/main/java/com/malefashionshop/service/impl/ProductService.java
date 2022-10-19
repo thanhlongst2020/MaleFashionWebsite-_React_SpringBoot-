@@ -3,6 +3,7 @@ package com.malefashionshop.service.impl;
 import com.malefashionshop.dto.request.ProductUpdateDto;
 import com.malefashionshop.dto.response.CategoryResponseDto;
 import com.malefashionshop.dto.response.ProductResponseDto;
+import com.malefashionshop.dto.response.ResponseDto;
 import com.malefashionshop.entities.*;
 import com.malefashionshop.entities.enums.DeleteEnum;
 import com.malefashionshop.exceptions.ResourceNotFoundException;
@@ -11,6 +12,8 @@ import com.malefashionshop.repository.*;
 import com.malefashionshop.service.IProductService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,40 +25,25 @@ public class ProductService implements IProductService {
 
     @Autowired
     private ProductRepository productRepository;
-
     @Autowired
     private ProductImageRepository productImageRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
     @Autowired
     private TagRepository tagRepository;
-
-    @Autowired
-    private BrandRepository brandRepository;
-
     @Autowired
     private ModelMapper modelMapper;
-
     @Autowired
     private ProductEntityAndProductResponseDtoMapper productEntityAndProductResponseDtoMapper;
 
     @Override
     public List<ProductResponseDto> getAllProducts() {
-        List<ProductEntity> listProductEntity =  this.productRepository.findAll();
+
+        List<ProductEntity> listProductEntity =  this.productRepository.findAllByDeleteEnum(DeleteEnum.ACTIVE);
         List<ProductResponseDto> results = new ArrayList<>();
 
         listProductEntity.forEach(productEntity ->{
-
             ProductResponseDto customProductResponseDto = new ProductResponseDto();
-
-            customProductResponseDto = productEntityAndProductResponseDtoMapper.map(productEntity);
-//            productEntity.getImages().forEach(image -> {
-//                System.out.println("-----------------------" + image.getUrl());
-//            });
             modelMapper.map(productEntity, customProductResponseDto);
-
+            this.productEntityAndProductResponseDtoMapper.map(productEntity, customProductResponseDto);
             results.add(customProductResponseDto);
         });
 
@@ -64,13 +52,14 @@ public class ProductService implements IProductService {
 
     @Override
     public ProductResponseDto getProductById(Long id) {
-        Optional<ProductEntity> optionalProductEntity = this.productRepository.findById(id);
 
+        Optional<ProductEntity> optionalProductEntity = this.productRepository.findById(id);
         if(optionalProductEntity.isEmpty()){
             throw new ResourceNotFoundException("Product Not Found");
         }
 
-        ProductResponseDto customProductResponseDto =  productEntityAndProductResponseDtoMapper.map(optionalProductEntity.get());
+        ProductResponseDto customProductResponseDto =  new ProductResponseDto();
+        this.productEntityAndProductResponseDtoMapper.map(optionalProductEntity.get(),customProductResponseDto);
         this.modelMapper.map(optionalProductEntity.get(), customProductResponseDto);
 
         return customProductResponseDto;
@@ -78,81 +67,72 @@ public class ProductService implements IProductService {
 
     @Override
     public ProductResponseDto createProduct(ProductUpdateDto dto) {
+
         ProductEntity productEntity = modelMapper.map(dto, ProductEntity.class);
-
-        //Set Brand object for productEntity to save to DB
-        Optional<BrandEntity> optionalBrandEntity =  brandRepository.findById(dto.getBrandId());
-        if(optionalBrandEntity.isEmpty()){
-            throw new ResourceNotFoundException("Brand ID of product is not found");
-        }
-        productEntity.setBrand(optionalBrandEntity.get());
-
-        //Set featureImage for productEntity to save to DB
-        Optional<ProductImageEntity> optionalProductImageEntity =  productImageRepository.findById(dto.getFeatureImageID());
-        if(optionalProductImageEntity.isEmpty()){
-            throw new ResourceNotFoundException("Feature Image ID of product is not found");
-        }
-        productEntity.setFeatureImage(optionalProductImageEntity.get().getUrl());
-
-        //Set CategoryEntity for productEntity to save to DB
-        Optional<CategoryEntity> optionalCategoryEntity  =  categoryRepository.findById(dto.getCategoryId());
-        if(optionalCategoryEntity.isEmpty()){
-            throw new ResourceNotFoundException("Category ID of product is not found");
-        }
-        productEntity.setCategory(optionalCategoryEntity.get());
-
-        //Set ProductImageEntity for productEntity to save to DB
-        //Prepare list of productImage url for ProductResponseDto
-        List<String> imageUrls = new ArrayList<>();
-        List<ProductImageEntity> listProductImageEntity = new ArrayList<>();
-        dto.getImageDetailIDs().forEach(imageDetailID ->{
-            Optional<ProductImageEntity> productImageEntity = this.productImageRepository.findById(imageDetailID);
-            if(productImageEntity.isEmpty()){
-                throw new ResourceNotFoundException("Product Image ID:"+imageDetailID+" of product is not found");
-            }
-            imageUrls.add(productImageEntity.get().getUrl());
-            listProductImageEntity.add(productImageEntity.get());
-        });
-        productEntity.setImages(listProductImageEntity);
-
-        //Set TagEntity for productEntity to save to DB
-        //Prepare list of tag name for ProductResponseDto
-        List<String> listTags = new ArrayList<>();
-        List<TagEntity> listTagEntity = new ArrayList<>();
-        dto.getTagDetailsIDs().forEach(tagDetailsID ->{
-            Optional<TagEntity> optionalTagEntity = this.tagRepository.findById(tagDetailsID);
-            if(optionalTagEntity.isEmpty()){
-                throw new ResourceNotFoundException("Product Tag ID:"+tagDetailsID+" of product is not found");
-            }
-            listTags.add(optionalTagEntity.get().getCode());
-            listTagEntity.add(optionalTagEntity.get());
-        });
-        productEntity.setTags(listTagEntity);
+        this.productEntityAndProductResponseDtoMapper.map(dto, productEntity);
 
         productEntity.setDeleteEnum(DeleteEnum.ACTIVE);
 
         //Save new productEntity to DB
         ProductEntity savedProductEntity = this.productRepository.save(productEntity);
 
-        optionalProductImageEntity.get().setProduct(savedProductEntity);
-        listProductImageEntity.forEach(productImageEntity -> {
-            productImageEntity.setProduct(savedProductEntity);
-            this.productImageRepository.save(productImageEntity);
+        // Set relationship with productEntity from productImage site
+        dto.getImageDetailIDs().forEach(imageDetailID ->{
+            Optional<ProductImageEntity> productImageEntity = this.productImageRepository.findById(imageDetailID);
+            productImageEntity.get().setProduct(savedProductEntity);
+            this.productImageRepository.save(productImageEntity.get());
         });
 
+        // Set relationship with productEntity from Tag site
+        dto.getTagDetailsIDs().forEach(tagDetailsID ->{
+            Optional<TagEntity> optionalTagEntity = this.tagRepository.findById(tagDetailsID);
+            optionalTagEntity.get().getProducts().add(savedProductEntity);
+            this.tagRepository.save(optionalTagEntity.get());
+        });
 
         //Set attribute for ProductResponseDto
-        ProductResponseDto productResponseDto = new ProductResponseDto();
-        productResponseDto.setBrandName(optionalBrandEntity.get().getName());
-        productResponseDto.setFeatureImage(optionalProductImageEntity.get().getUrl());
-        productResponseDto.setCategoryName(optionalCategoryEntity.get().getName());
-        productResponseDto.setImageUrls(imageUrls);
-        productResponseDto.setListTags(listTags);
-
-        modelMapper.map(savedProductEntity,productResponseDto);
+        ProductResponseDto productResponseDto = this.modelMapper.map(savedProductEntity, ProductResponseDto.class);
+        this.productEntityAndProductResponseDtoMapper.map( savedProductEntity, productResponseDto);
 
         return productResponseDto;
     }
+
+    @Override
+    public ProductResponseDto updateProduct(Long id, ProductUpdateDto dto) {
+
+        Optional<ProductEntity> optionalProductEntity = this.productRepository.findById(id);
+        if(optionalProductEntity.isEmpty()){
+            throw new ResourceNotFoundException("Product with ID: " + id + "can not found");
+        }
+
+        this.modelMapper.map(dto,optionalProductEntity.get());
+        productEntityAndProductResponseDtoMapper.map(dto, optionalProductEntity.get());
+
+        this.productRepository.save(optionalProductEntity.get());
+
+        ProductResponseDto productResponseDto =  new ProductResponseDto();
+        productEntityAndProductResponseDtoMapper.map(optionalProductEntity.get(), productResponseDto);
+        this.modelMapper.map(optionalProductEntity.get(), productResponseDto);
+
+        return productResponseDto;
+    }
+
+    @Override
+    public ResponseEntity<ResponseDto> deleteProduct(Long id) {
+
+        Optional<ProductEntity> optionalProductEntity = this.productRepository.findById(id);
+        if(optionalProductEntity.isEmpty() || optionalProductEntity.get().getDeleteEnum().equals(DeleteEnum.DELETED)){
+            throw new ResourceNotFoundException("Product with ID: " + id + " is not found");
+        }
+
+        optionalProductEntity.get().setDeleteEnum(DeleteEnum.DELETED);
+
+        this.productRepository.save(optionalProductEntity.get());
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseDto(null, "Delete Success Fully!","200"));
+    }
+
 
 
 }

@@ -1,5 +1,6 @@
 package com.malefashionshop.entities;
 
+import com.malefashionshop.entities.enums.DeleteEnum;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,5 +27,11 @@ public class TagEntity extends BaseEntity {
     @JoinTable(name = "product_tag", joinColumns = @JoinColumn(name = "tag_id"), inverseJoinColumns = @JoinColumn(name = "product_id"))
     private List<ProductEntity> products = new ArrayList<>();
 
+    @PreRemove
+    private void preRemove() {
+        this.products.forEach(product->{
+            product.setTags(null);
+        });
+    }
 
 }

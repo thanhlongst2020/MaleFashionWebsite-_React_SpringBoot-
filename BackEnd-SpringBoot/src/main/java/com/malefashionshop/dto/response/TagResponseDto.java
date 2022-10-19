@@ -6,4 +6,5 @@ import lombok.Data;
 public class TagResponseDto {
     private Long id;
     private String code;
+    private String name;
 }

@@ -63,9 +63,11 @@ public class ImagesStorageService implements IImagesStorageService {
     }
 
     @Override
-    public ResponseEntity<List<ProductImageResponseDto>> loadAllByProductID(Long productId) {
+    public ResponseEntity<List<ProductImageResponseDto>> getAllImagesByProductID(Long productId) {
+
         List<ProductImageEntity> productImageEnties = new ArrayList<>();
         List<ProductImageResponseDto> fileInfos = new ArrayList<>();
+
         System.out.println(this.root);
         try {
             productImageEnties = productImageRepository.findAllByProductId(productId);
@@ -81,7 +83,7 @@ public class ImagesStorageService implements IImagesStorageService {
     }
 
     @Override
-    public ResponseEntity<UploadImageResponseDto> saveImages(MultipartFile[] files, Long productID) {
+    public ResponseEntity<UploadImageResponseDto> createImages(MultipartFile[] files, Long productID) {
         String message = "";
         List<ProductImageResponseDto> listProductImageResponseDto= new ArrayList<>();
         List<String> fileNames = new ArrayList<>();
@@ -110,7 +112,8 @@ public class ImagesStorageService implements IImagesStorageService {
 
                     // Atribute Product of productImageEntity can be null or not
                     ProductImageEntity productImageEntity = new ProductImageEntity(fileName,
-                            this.root.toString().concat(fileName), null);
+                            this.root.toString().concat("\\").concat(fileName), null);
+                    String temp = this.root.toString();
                     if(optionalProductEntity != null){
                         productImageEntity.setProduct(optionalProductEntity.get());
                     }
@@ -136,7 +139,7 @@ public class ImagesStorageService implements IImagesStorageService {
     }
 
     @Override
-    public ResponseEntity<ProductImageResponseDto> updateImages(Long productImageID, ProductImageUpdateDto productImageUpdateDto) {
+    public ResponseEntity<ProductImageResponseDto> updateImage(Long productImageID, ProductImageUpdateDto productImageUpdateDto) {
         Optional<ProductImageEntity> optionalProductImageEntity = this.productImageRepository.findById(productImageID);
         if(optionalProductImageEntity.isEmpty()){
             throw new ResourceNotFoundException("ID of Image can not found");

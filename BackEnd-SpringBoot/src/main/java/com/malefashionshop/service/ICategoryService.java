@@ -2,6 +2,8 @@ package com.malefashionshop.service;
 
 import com.malefashionshop.dto.request.CategoryUpdateDto;
 import com.malefashionshop.dto.response.CategoryResponseDto;
+import com.malefashionshop.dto.response.ResponseDto;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -13,5 +15,5 @@ public interface ICategoryService {
 
     CategoryResponseDto updateCategory(Long id, CategoryUpdateDto dto);
 
-    void deleteCategory(Long id);
+    ResponseEntity<ResponseDto> deleteCategory(Long id);
 }

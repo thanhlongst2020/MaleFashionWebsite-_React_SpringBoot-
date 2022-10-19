@@ -26,7 +26,7 @@ public class ProductEntity extends BaseEntity{
     @Column(name="description")
     private String description;
 
-    @Column(name="state ")
+    @Column(name="state")
     @Enumerated(EnumType.STRING)
     private DeleteEnum deleteEnum;
 

@@ -18,11 +18,11 @@ import java.util.stream.Stream;
 public interface IImagesStorageService {
     void init();
 
-    ResponseEntity<List<ProductImageResponseDto>> loadAllByProductID(Long productId);
+    ResponseEntity<List<ProductImageResponseDto>> getAllImagesByProductID(Long productId);
 
-    ResponseEntity<UploadImageResponseDto> saveImages(MultipartFile[] files, Long productID);
+    ResponseEntity<UploadImageResponseDto> createImages(MultipartFile[] files, Long productID);
 
 //    ResponseEntity<ProductImageResponseDto> updateImages(ProductImageUpdateDto productImageUpdateDto);
 
-    ResponseEntity<ProductImageResponseDto> updateImages(Long productImageID, ProductImageUpdateDto productImageUpdateDto);
+    ResponseEntity<ProductImageResponseDto> updateImage(Long productImageID, ProductImageUpdateDto productImageUpdateDto);
 }
