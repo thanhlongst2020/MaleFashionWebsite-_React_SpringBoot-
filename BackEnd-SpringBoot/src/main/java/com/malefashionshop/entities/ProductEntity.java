@@ -1,12 +1,18 @@
 package com.malefashionshop.entities;
 
+import com.malefashionshop.entities.enums.DeleteEnum;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name="product")
 public class ProductEntity extends BaseEntity{
@@ -15,13 +21,14 @@ public class ProductEntity extends BaseEntity{
     private String name;
 
     @Column(name ="feature_image")
-    private String feature_image;
+    private String featureImage;
 
     @Column(name="description")
     private String description;
 
-    @Column(name="content")
-    private String content;
+    @Column(name="state ")
+    @Enumerated(EnumType.STRING)
+    private DeleteEnum deleteEnum;
 
     @ManyToOne()
     @JoinColumn(name = "category_id")
@@ -31,16 +38,14 @@ public class ProductEntity extends BaseEntity{
     @JoinColumn(name = "brand_id")
     private BrandEntity brand;
 
-    @OneToMany(mappedBy = "product")
-    private List<ProductImageEntity> product_images = new ArrayList<>();
-
     @ManyToMany(mappedBy = "products")
-    private List<TagEntity> tags = new ArrayList<>();
+    private List<TagEntity> tags;
 
     @OneToMany(mappedBy = "product")
-    List<RatingEntity> ratings = new ArrayList<>();
+    private List<RatingEntity> ratings;
 
     @OneToMany(mappedBy = "product")
-    List<ProductImageEntity> images = new ArrayList<>();
+    private List<ProductImageEntity> images;
+
 
 }

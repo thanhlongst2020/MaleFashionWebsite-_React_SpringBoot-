@@ -1,10 +1,15 @@
 package com.malefashionshop.entities;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name="product_detail")
 public class ProductDetailEntity extends BaseEntity {
@@ -32,7 +37,7 @@ public class ProductDetailEntity extends BaseEntity {
     @OneToOne(mappedBy = "productDetail")
     private OrderItemEntity orderItem;
 
-    @OneToOne(mappedBy = "productDetail")
-    private CartItemEntity cartItem;
+    @OneToOne()
+    private CartEntity cartEntity;
 
 }

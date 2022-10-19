@@ -1,18 +1,30 @@
 package com.malefashionshop.entities;
 
-import lombok.Data;
+import lombok.*;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name="product_images")
 public class ProductImageEntity extends BaseEntity {
 
-    @Column(name="image_url")
-    private String image_url;
+    @Column(name="name")
+    private String name;
+
+    @Column(name="url")
+    private String url;
 
     @ManyToOne()
     @JoinColumn(name = "product_id")
     private ProductEntity product;
+
+    public ProductImageEntity(String name, String url) {
+        this.name = name;
+        this.url = url;
+    }
 }

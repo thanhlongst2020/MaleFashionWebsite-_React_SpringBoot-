@@ -1,22 +1,28 @@
 package com.malefashionshop.entities;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name="cart")
 public class CartEntity extends BaseEntity{
-    @Column(name="total_price")
-    private float totalPrice;
+    @Column(name="quantity")
+    private int quantity;
 
     @ManyToOne()
     @JoinColumn(name="customer_id")
     private CustomerEntity customer;
 
-    @OneToMany(mappedBy = "cart")
-    private List<CartItemEntity> cartItems = new ArrayList<>();
+    @OneToOne()
+    @JoinColumn(name = "product_detail_id")
+    private ProductEntity productEntity;
 }
