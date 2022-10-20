@@ -3,7 +3,6 @@ package com.malefashionshop.exceptions.handlers;
 import com.malefashionshop.dto.response.ErrorResponse;
 import com.malefashionshop.exceptions.DataConstrainConflictException;
 import com.malefashionshop.exceptions.ResourceNotFoundException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -30,10 +29,6 @@ public class GlobalExceptionsHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<ErrorResponse>(error, HttpStatus.CONFLICT);
     }
-
-
-
-
 
 
 

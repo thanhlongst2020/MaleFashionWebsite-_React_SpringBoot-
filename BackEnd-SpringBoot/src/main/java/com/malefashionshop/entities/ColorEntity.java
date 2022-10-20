@@ -21,6 +21,9 @@ public class ColorEntity extends BaseEntity {
     @Column(name="name")
     private String name;
 
+    @Column(name="code")
+    private String code;
+
     @OneToMany(mappedBy = "color")
     List<ProductDetailEntity> productDetail = new ArrayList<>();
 }

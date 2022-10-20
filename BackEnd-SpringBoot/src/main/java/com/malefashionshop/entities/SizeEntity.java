@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,9 +15,16 @@ import java.util.List;
 @Entity
 @Table(name="size")
 public class SizeEntity extends BaseEntity {
-    @Column(name="name")
+    @Column(name="name", unique = true)
     private String name;
 
     @OneToMany(mappedBy = "size")
-    List<ProductDetailEntity> productDetail = new ArrayList<>();
+    List<ProductDetailEntity> productDetails = new ArrayList<>();
+
+    @PreRemove
+    private void preRemove() {
+        this.productDetails.forEach(productDetail->{
+            productDetail.setSize(null);
+        });
+    }
 }
