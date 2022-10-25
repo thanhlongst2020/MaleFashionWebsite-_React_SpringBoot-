@@ -84,4 +84,17 @@ public class CartService implements ICartService {
 
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto(null, "Delete Success Fully!","200"));
     }
+
+    @Override
+    public CartResponseDto getCartByID(Long id) {
+        Optional<CartEntity> optionalCartEntity =  this.cartRepository.findById(id);
+        if(optionalCartEntity.isEmpty()){
+            throw new ResourceNotFoundException("Cart with ID: "+id+"can be not found");
+        }
+
+        CartResponseDto cartResponseDto = new CartResponseDto();
+        this.cartEntityAndResponseDtoMapper.map(optionalCartEntity.get(), cartResponseDto);
+
+        return cartResponseDto;
+    }
 }

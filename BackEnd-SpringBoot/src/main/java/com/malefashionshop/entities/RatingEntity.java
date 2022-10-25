@@ -1,5 +1,7 @@
 package com.malefashionshop.entities;
 
+import com.malefashionshop.entities.EntityKey.OrderItemKey;
+import com.malefashionshop.entities.EntityKey.RatingKey;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,21 +14,24 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name="rating")
-public class RatingEntity extends BaseEntity {
+public class RatingEntity {
+    @EmbeddedId
+    RatingKey id;
 
     @Column(name="comment")
     private String comment;
 
     @Column(name="score")
-    private float score;
+    private int score;
 
-    @ManyToOne()
-    @JoinColumn(name="customer_id")
-    private CustomerEntity customer;
+    @ManyToOne
+    @MapsId("customerID")
+    @JoinColumn(name = "customer_id")
+    CustomerEntity customer;
 
-    @ManyToOne()
-    @JoinColumn(name="product_id")
-    private ProductEntity product;
-
+    @ManyToOne
+    @MapsId("productID")
+    @JoinColumn(name = "product_id")
+    ProductEntity product;
 
 }

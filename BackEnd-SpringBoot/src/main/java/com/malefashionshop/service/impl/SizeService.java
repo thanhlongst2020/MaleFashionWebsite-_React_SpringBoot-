@@ -49,7 +49,7 @@ public class SizeService implements ISizeService {
     public SizeResponseDto createSize(SizeUpdateDto sizeUpdateDto) {
         SizeEntity sizeEntity = this.sizeRepository.findByName(sizeUpdateDto.getName());
         if(sizeEntity != null){
-            throw new DataConstrainConflictException("Size name " +sizeUpdateDto.getName()+ " is alredy exist");
+            throw new DataConstrainConflictException("Size name " +sizeUpdateDto.getName()+ " is already exist");
         }
 
         SizeEntity size = this.modelMapper.map(sizeUpdateDto, SizeEntity.class);
@@ -67,7 +67,7 @@ public class SizeService implements ISizeService {
 
         SizeEntity existSizeName = this.sizeRepository.findByName(sizeUpdateDto.getName());
         if(existSizeName != null){
-            throw new DataConstrainConflictException("Size name " +sizeUpdateDto.getName()+ " is alredy exist");
+            throw new DataConstrainConflictException("Size name " +sizeUpdateDto.getName()+ " is already exist");
         }
 
         this.modelMapper.map(sizeUpdateDto, optionalSizeEntity.get());

@@ -2,9 +2,11 @@ package com.malefashionshop.mappers;
 
 import com.malefashionshop.dto.request.OrderItemUpdateDto;
 import com.malefashionshop.dto.request.OrderUpdateDto;
+import com.malefashionshop.dto.response.CustomerResponseDto;
 import com.malefashionshop.dto.response.OrderItemResponseDto;
 import com.malefashionshop.dto.response.OrderResponseDto;
 import com.malefashionshop.dto.response.ProductDetailResponseDto;
+import com.malefashionshop.entities.CustomerEntity;
 import com.malefashionshop.entities.OrderEntity;
 import com.malefashionshop.entities.OrderItemEntity;
 import com.malefashionshop.entities.ProductDetailEntity;
@@ -25,12 +27,25 @@ public class OrderEntityAndOrderResponseDtoMapper {
     @Autowired
     OrderItemEntityAndOrderItemResponseDtoMapper orderItemEntityAndResponseDtoMapper;
     @Autowired
+    CustomerEntityAndCustomerResponseDtoMapper customerEntityAndResponseDtoMapper;
+    @Autowired
     OrderItemRepository orderItemRepository;
+    @Autowired
+    CustomerRepository customerRepository;
+
 
     public void map(OrderEntity orderEntity, OrderResponseDto orderResponseDto){
         BeanUtils.copyProperties(orderEntity, orderResponseDto);
 
-        orderResponseDto.setCustomer(null);// Tạm thời, vì chưa tạo Customer
+        if(orderEntity.getCustomer()!=null) {
+            Optional<CustomerEntity> optionalCustomerEntity = this.customerRepository.findById(
+                    orderEntity.getCustomer().getId());
+            CustomerResponseDto customerResponseDto = new CustomerResponseDto();
+            this.customerEntityAndResponseDtoMapper.map(optionalCustomerEntity.get(), customerResponseDto);
+            orderResponseDto.setCustomer(customerResponseDto);
+        } else {
+            orderResponseDto.setCustomer(null);
+        }
 
         List<OrderItemResponseDto> listOrderItemResponseDto = new ArrayList<>();
         if(orderEntity.getOrderItems()!= null) {
@@ -48,7 +63,12 @@ public class OrderEntityAndOrderResponseDtoMapper {
 
     public void map(OrderUpdateDto orderUpdateDto, OrderEntity orderEntity){
 
-//        orderEntity.setCustomer(null); // Tạm thời vì chưa có Customer
+
+        Optional<CustomerEntity> optionalCustomerEntity = this.customerRepository.findById(orderUpdateDto.getCustomerID());
+        if(optionalCustomerEntity.isEmpty()){
+            throw  new ResourceNotFoundException("Customer with ID: " +orderUpdateDto.getCustomerID()+ " can be not found");
+        }
+        orderEntity.setCustomer(optionalCustomerEntity.get()); // Tạm thời vì chưa có Customer
 //
 //        List<OrderItemEntity> listOrderItemEntity = new ArrayList<>();
 //        orderUpdateDto.getOrderItemID().forEach(id ->{

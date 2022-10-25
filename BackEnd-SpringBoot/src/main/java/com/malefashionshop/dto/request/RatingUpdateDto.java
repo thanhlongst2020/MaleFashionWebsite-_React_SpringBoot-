@@ -1,22 +1,25 @@
 package com.malefashionshop.dto.request;
 
-import com.malefashionshop.dto.response.OrderItemResponseDto;
-import com.malefashionshop.entities.CustomerEntity;
 import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.List;
+import javax.validation.constraints.Size;
 
 @Data
 @Builder(toBuilder=true)
-public class OrderUpdateDto {
-
+public class RatingUpdateDto {
     @NotNull(message= "Customer ID  is required")
     private Long customerID;
+    @NotNull(message= "Product ID  is required")
+    private Long productID;
 
-    private List<Long> orderItemID;
+    private String comment;
+
+    private int score;
+
 
 
 }

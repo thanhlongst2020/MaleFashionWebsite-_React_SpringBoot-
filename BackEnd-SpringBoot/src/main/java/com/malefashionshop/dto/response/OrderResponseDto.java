@@ -10,6 +10,6 @@ import java.util.List;
 public class OrderResponseDto {
     private Long id;
     private float totalPrice;
-    private CustomerEntity customer;
+    private CustomerResponseDto customer;
     private List<OrderItemResponseDto> orderItemResponseDto;
 }

@@ -17,4 +17,6 @@ public interface ICartService {
     List<CartResponseDto> getAllCartsByCustomerID(Long id);
 
     ResponseEntity<ResponseDto> deleteCart(Long id);
+
+    CartResponseDto getCartByID(Long id);
 }

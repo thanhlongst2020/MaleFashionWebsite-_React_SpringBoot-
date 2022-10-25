@@ -29,7 +29,7 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    OrderResponseDto createOrderResponseDto (@RequestBody OrderUpdateDto OrderUpdateDto){
+    OrderResponseDto createOrderResponseDto (@Valid @RequestBody OrderUpdateDto OrderUpdateDto){
         return this.orderService.createOrder(OrderUpdateDto);
     }
 

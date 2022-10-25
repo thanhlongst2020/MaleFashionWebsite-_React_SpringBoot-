@@ -32,6 +32,11 @@ public class CartController {
         return this.cartService.getAllCartsByCustomerID(id);
     }
 
+    @GetMapping("/{id}")
+    CartResponseDto getCartByID(@PathVariable("id") Long id){
+        return this.cartService.getCartByID(id);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     CartResponseDto createCart(@Valid @RequestBody CartUpdateDto dto){
