@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +21,13 @@ public class ColorEntity extends BaseEntity {
     @Column(name="code")
     private String code;
 
-    @OneToMany(mappedBy = "color")
-    List<ProductDetailEntity> productDetail = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "color")
+    private List<ProductDetailEntity> listProductDetailEntity;
+
+    @PreRemove
+    private void preRemove() {
+        this.listProductDetailEntity.forEach(productDetailEntity->{
+            productDetailEntity.setColor(null);
+        });
+    }
 }

@@ -1,5 +1,6 @@
 package com.malefashionshop.entities;
 
+import com.malefashionshop.entities.enums.DeleteEnum;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,13 +16,23 @@ import java.util.List;
 @Entity
 @Table(name="order")
 public class OrderEntity extends BaseEntity{
-    @Column(name="total_price")
-    private float totalPrice;
+
+    @Column(name="state")
+    @Enumerated(EnumType.STRING)
+    private DeleteEnum deleteEnum;
 
     @ManyToOne()
     @JoinColumn(name="customer_id")
     private CustomerEntity customer;
 
     @OneToMany(mappedBy = "order")
-    private List<OrderItemEntity> orderItems = new ArrayList<>();
+    private List<OrderItemEntity> orderItems;
+
+    @PreRemove
+    private void preRemove() {
+        this.orderItems.forEach(product->{
+            product.setOrder(null);
+        });
+    }
+
 }

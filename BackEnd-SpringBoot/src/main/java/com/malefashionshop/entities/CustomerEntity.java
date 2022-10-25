@@ -1,14 +1,12 @@
 package com.malefashionshop.entities;
 
+import com.malefashionshop.entities.enums.DeleteEnum;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +27,14 @@ public class CustomerEntity extends BaseEntity {
 
     @Column(name="address")
     private String address;
+
+    @ManyToOne()
+    @JoinColumn(name = "role_id")
+    private RoleEntity role;
+
+    @Column(name="state")
+    @Enumerated(EnumType.STRING)
+    private DeleteEnum deleteEnum;
 
     @OneToMany(mappedBy = "customer")
     List<OrderEntity> orders = new ArrayList<>();

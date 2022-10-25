@@ -1,5 +1,6 @@
 package com.malefashionshop.entities;
 
+import com.malefashionshop.entities.EntityKey.OrderItemKey;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,14 +13,20 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name="order_item")
-public class OrderItemEntity extends BaseEntity {
-    private int quantity;
+public class OrderItemEntity {
 
-    @ManyToOne()
+    @EmbeddedId
+    OrderItemKey id;
+
+    @ManyToOne
+    @MapsId("orderId")
     @JoinColumn(name = "order_id")
-    private OrderEntity order;
+    OrderEntity order;
 
-    @OneToOne()
+    @ManyToOne
+    @MapsId("productDetailID")
     @JoinColumn(name = "product_detail_id")
-    private ProductDetailEntity productDetail;
+    ProductDetailEntity productDetail;
+
+    int quantity;
 }

@@ -1,11 +1,14 @@
 package com.malefashionshop.entities;
 
+import com.malefashionshop.entities.enums.DeleteEnum;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,8 +16,6 @@ import javax.persistence.*;
 @Entity
 @Table(name="product_detail")
 public class ProductDetailEntity extends BaseEntity {
-    @Column(name="name")
-    private String name;
 
     @Column(name="price")
     private float price;
@@ -26,6 +27,10 @@ public class ProductDetailEntity extends BaseEntity {
     @JoinColumn(name="product_id")
     private ProductEntity product;
 
+    @Column(name="state")
+    @Enumerated(EnumType.STRING)
+    private DeleteEnum deleteEnum;
+
     @ManyToOne()
     @JoinColumn(name = "size_id")
     private SizeEntity size;
@@ -34,10 +39,10 @@ public class ProductDetailEntity extends BaseEntity {
     @JoinColumn(name = "color_id")
     private ColorEntity color;
 
-    @OneToOne(mappedBy = "productDetail")
-    private OrderItemEntity orderItem;
+    @OneToMany(mappedBy = "productDetail")
+    private List<OrderItemEntity> listOrderItem;
 
-    @OneToOne()
-    private CartEntity cartEntity;
+//    @OneToOne()
+//    private CartEntity cartEntity;
 
 }

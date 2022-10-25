@@ -23,7 +23,7 @@ public class TagEntity extends BaseEntity {
     @Column(name = "name")
     private String name;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "product_tag", joinColumns = @JoinColumn(name = "tag_id"), inverseJoinColumns = @JoinColumn(name = "product_id"))
     private List<ProductEntity> products = new ArrayList<>();
 

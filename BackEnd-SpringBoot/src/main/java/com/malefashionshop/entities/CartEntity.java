@@ -24,5 +24,5 @@ public class CartEntity extends BaseEntity{
 
     @OneToOne()
     @JoinColumn(name = "product_detail_id")
-    private ProductEntity productEntity;
+    private ProductDetailEntity productDetail;
 }

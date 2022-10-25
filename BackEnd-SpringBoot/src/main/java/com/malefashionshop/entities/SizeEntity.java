@@ -18,13 +18,13 @@ public class SizeEntity extends BaseEntity {
     @Column(name="name", unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "size")
-    List<ProductDetailEntity> productDetails = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "size")
+    private List<ProductDetailEntity> listProductDetailEntity;
 
     @PreRemove
     private void preRemove() {
-        this.productDetails.forEach(productDetail->{
-            productDetail.setSize(null);
+        this.listProductDetailEntity.forEach(productDetailEntity->{
+            productDetailEntity.setSize(null);
         });
     }
 }

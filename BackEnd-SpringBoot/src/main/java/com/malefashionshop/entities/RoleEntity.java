@@ -1,26 +1,40 @@
 package com.malefashionshop.entities;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name="role")
-public class RoleEntity extends BaseEntity {
+public class RoleEntity  {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(name="name")
     private String name;
 
     @OneToMany(mappedBy = "role")
-    List<AdminEntity> admin = new ArrayList<>();
+    List<AdminEntity> admins;
+
+    @OneToMany(mappedBy = "role")
+    List<CustomerEntity> customers;
+
+    @PreRemove
+    private void preRemove() {
+        this.customers.forEach(customer->{
+            customer.setRole(null);
+        });
+
+        this.admins.forEach(admin->{
+            admin.setRole(null);
+        });
+    }
 }
