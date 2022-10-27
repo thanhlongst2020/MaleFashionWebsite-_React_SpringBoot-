@@ -19,6 +19,7 @@
         <java.version>11</java.version>
         <modelmapper.version>3.1.0</modelmapper.version>
         <projectlombok.version>1.18.20</projectlombok.version>
+        <jsonwebtoken.version>0.9.1</jsonwebtoken.version>
     </properties>
 
     <dependencies>
@@ -52,6 +53,17 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>${jsonwebtoken.version}</version>
         </dependency>
 
     </dependencies>

@@ -20,7 +20,7 @@ public interface IImagesStorageService {
 
     ResponseEntity<List<ProductImageResponseDto>> getAllImagesByProductID(Long productId);
 
-    ResponseEntity<UploadImageResponseDto> createImages(MultipartFile[] files, Long productID);
+    ResponseEntity<UploadImageResponseDto> createImages(List<ProductImageUpdateDto> listProductImageUpdateDto);
 
 //    ResponseEntity<ProductImageResponseDto> updateImages(ProductImageUpdateDto productImageUpdateDto);
 

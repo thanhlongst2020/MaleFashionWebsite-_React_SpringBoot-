@@ -1,9 +1,11 @@
 package com.malefashionshop.exceptions.handlers;
 
+import com.malefashionshop.dto.response.ErrorResponse;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -97,6 +99,21 @@ public class MethodArgumentNotValidExceptionHandler extends ResponseEntityExcept
                 new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), error);
         return new ResponseEntity<Object>(
                 apiError, new HttpHeaders(), apiError.getStatus());
+    }
+
+    @ExceptionHandler(value = DataIntegrityViolationException.class)
+    public ResponseEntity<?> handleDataIntegrityViolationException(
+            DataIntegrityViolationException e) {
+        ErrorResponse response = null;
+
+        String error = e.getCause().getCause().getLocalizedMessage();
+
+        ApiError apiError =
+                new ApiError(HttpStatus.BAD_REQUEST, "Data Integrity Violation Exception", error);
+
+        return new ResponseEntity<Object>(
+                apiError, new HttpHeaders(), apiError.getStatus());
+
     }
 
     @Getter

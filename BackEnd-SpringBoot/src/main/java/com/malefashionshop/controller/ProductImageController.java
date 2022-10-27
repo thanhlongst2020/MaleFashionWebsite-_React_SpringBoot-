@@ -31,9 +31,9 @@ public class ProductImageController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<UploadImageResponseDto> saveImages(@RequestParam(name = "productID", required = false) Long productID,
-                                                              @RequestParam("files") MultipartFile[] files) {
-        return imagesStorageService.createImages(files, productID);
+    public ResponseEntity<UploadImageResponseDto> saveImages(
+            @RequestBody List<ProductImageUpdateDto> listProductImageUpdateDto) {
+        return imagesStorageService.createImages(listProductImageUpdateDto);
     }
 
     @GetMapping("/product/{productId}")

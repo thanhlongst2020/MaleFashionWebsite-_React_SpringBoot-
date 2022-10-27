@@ -17,10 +17,5 @@ public class ProductImageUpdateDto {
 
     private Long productID;
 
-//    public ProductImageUpdateDto(String name, String url){
-//        this.name = name;
-//        this.url = url;
-//        this.productID = productID;
-//    }
 
 }

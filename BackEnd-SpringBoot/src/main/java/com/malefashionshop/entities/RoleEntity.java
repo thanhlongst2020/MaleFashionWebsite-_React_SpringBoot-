@@ -1,9 +1,9 @@
 package com.malefashionshop.entities;
 
+import com.malefashionshop.entities.enums.ERole;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -11,18 +11,19 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="role")
+@Table(name="role", uniqueConstraints={@UniqueConstraint(columnNames={"name"})})
 public class RoleEntity  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="name")
-    private String name;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20, unique=true)
+    private ERole name;
 
     @OneToMany(mappedBy = "role")
-    List<AdminEntity> admins;
+    List<UserEntity> users;
 
     @OneToMany(mappedBy = "role")
     List<CustomerEntity> customers;
@@ -33,8 +34,12 @@ public class RoleEntity  {
             customer.setRole(null);
         });
 
-        this.admins.forEach(admin->{
-            admin.setRole(null);
+        this.users.forEach(user->{
+            user.setRole(null);
         });
     }
+
+//    public RoleEntity(RoleEntity roleEntity){
+//
+//    }
 }

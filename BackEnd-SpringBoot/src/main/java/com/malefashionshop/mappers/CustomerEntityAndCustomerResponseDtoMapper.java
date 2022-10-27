@@ -1,11 +1,7 @@
 package com.malefashionshop.mappers;
 
-import com.malefashionshop.dto.request.AdminUpdateDto;
 import com.malefashionshop.dto.request.CustomerUpdateDto;
-import com.malefashionshop.dto.response.AdminResponseDto;
 import com.malefashionshop.dto.response.CustomerResponseDto;
-import com.malefashionshop.dto.response.RoleResponseDto;
-import com.malefashionshop.entities.AdminEntity;
 import com.malefashionshop.entities.CustomerEntity;
 import com.malefashionshop.entities.RoleEntity;
 import com.malefashionshop.exceptions.ResourceNotFoundException;
@@ -28,7 +24,7 @@ public class CustomerEntityAndCustomerResponseDtoMapper {
         if(customerEntity.getRole() == null){
             customerResponseDto.setRoleName(null);
         } else{
-            customerResponseDto.setRoleName(customerEntity.getRole().getName());
+            customerResponseDto.setRoleName(customerEntity.getRole().getName().name());
         }
     }
 

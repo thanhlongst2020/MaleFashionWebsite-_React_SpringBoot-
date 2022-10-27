@@ -1,13 +1,8 @@
 package com.malefashionshop.controller;
 
-import com.malefashionshop.dto.request.AdminUpdateDto;
-import com.malefashionshop.dto.request.CategoryUpdateDto;
 import com.malefashionshop.dto.request.RoleUpdateDto;
-import com.malefashionshop.dto.response.AdminResponseDto;
-import com.malefashionshop.dto.response.CategoryResponseDto;
 import com.malefashionshop.dto.response.ResponseDto;
 import com.malefashionshop.dto.response.RoleResponseDto;
-import com.malefashionshop.service.impl.AdminService;
 import com.malefashionshop.service.impl.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

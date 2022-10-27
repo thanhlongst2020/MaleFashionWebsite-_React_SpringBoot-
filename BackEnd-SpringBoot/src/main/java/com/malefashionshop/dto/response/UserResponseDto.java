@@ -1,10 +1,9 @@
 package com.malefashionshop.dto.response;
 
-import com.malefashionshop.entities.RoleEntity;
 import lombok.Data;
 
 @Data
-public class AdminResponseDto {
+public class UserResponseDto {
     private Long id;
     private String name;
     private Long roleID;

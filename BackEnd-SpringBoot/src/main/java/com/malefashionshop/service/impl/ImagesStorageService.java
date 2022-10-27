@@ -11,6 +11,7 @@ import com.malefashionshop.repository.ProductImageRepository;
 import com.malefashionshop.repository.ProductRepository;
 import com.malefashionshop.service.IImagesStorageService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -76,66 +77,56 @@ public class ImagesStorageService implements IImagesStorageService {
         }
 
         productImageEnties.forEach(productImageEntity -> {
-            fileInfos.add(new ProductImageResponseDto(productImageEntity.getId(), productImageEntity.getName(),
-                    context.getContextPath().concat(productImageEntity.getUrl()), productImageEntity.getProduct().getId()));
+            ProductImageResponseDto productImageResponseDto = new ProductImageResponseDto();
+            BeanUtils.copyProperties(productImageEntity, productImageResponseDto);
+            if(productImageEntity.getProduct() != null){
+                productImageResponseDto.setProductID(productImageEntity.getProduct().getId());
+            } else{
+                productImageResponseDto.setProductID(null);
+            }
+            fileInfos.add(productImageResponseDto);
+
         });
         return ResponseEntity.status(HttpStatus.OK).body(fileInfos);
     }
 
     @Override
-    public ResponseEntity<UploadImageResponseDto> createImages(MultipartFile[] files, Long productID) {
-        String message = "";
+    public ResponseEntity<UploadImageResponseDto> createImages(List<ProductImageUpdateDto> listProductImageUpdateDto) {
         List<ProductImageResponseDto> listProductImageResponseDto= new ArrayList<>();
         List<String> fileNames = new ArrayList<>();
-            Arrays.asList(files).stream().forEach(file -> {
-                int i = 1;
-                String fileName = file.getOriginalFilename();
-                Optional<ProductEntity> optionalProductEntity = null;
-                if(productID!= null){
-                    optionalProductEntity = productRepository.findById(productID);
+        listProductImageUpdateDto.forEach(productImageUpdateDto -> {
+            ProductImageEntity productImageEntity = new ProductImageEntity();
 
-                    if(optionalProductEntity.isEmpty()){
-                        throw new ResourceNotFoundException("Product with ID "+productID+ " does not exist" );
-                    }
+            BeanUtils.copyProperties(productImageUpdateDto, productImageEntity);
+
+            if(productImageUpdateDto.getProductID() != null){
+                var productID = productImageUpdateDto.getProductID();
+
+                Optional<ProductEntity> optionalProductEntity = this.productRepository.findById(productID);
+                if(optionalProductEntity.isEmpty()){
+                    throw new ResourceNotFoundException("Product with ID: "+productID+ " can be not found");
                 }
+                productImageEntity.setProduct(optionalProductEntity.get());
+            } else{
+                productImageEntity.setProduct(null);
+            }
 
-                try {
-                    //Check the file name is exist or not ( just in Database )
-                    while(productImageRepository.findByName(fileName).size() > 0){
-                        String jutName = fileName.substring(0, fileName.length() -4);
-                        String subFix = fileName.substring(fileName.length() -4, fileName.length());
-                        fileName = jutName.concat("(" + i + ")").concat(subFix);
-                        i++;
-                    }
-                    //Save images to folder server. But if the file name is exist in server without in DB. It can be error
-                    Files.copy(file.getInputStream(), this.root.resolve(fileName));
+            this.productImageRepository.save(productImageEntity);
 
-                    // Atribute Product of productImageEntity can be null or not
-                    ProductImageEntity productImageEntity = new ProductImageEntity(fileName,
-                            this.root.toString().concat("\\").concat(fileName), null);
-                    String temp = this.root.toString();
-                    if(optionalProductEntity != null){
-                        productImageEntity.setProduct(optionalProductEntity.get());
-                    }
+            ProductImageResponseDto productImageResponseDto = new ProductImageResponseDto();
 
-                    //Save images info to DB
-                    productImageRepository.save(productImageEntity);
+            BeanUtils.copyProperties(productImageEntity, productImageResponseDto);
+            if(productImageEntity.getProduct()!= null){
+                productImageResponseDto.setProductID(productImageEntity.getProduct().getId());
+            } else {
+                productImageResponseDto.setProductID(null);
+            }
 
-                    //Set productImageResponseDto for response
-                    ProductImageResponseDto productImageResponseDto = modelMapper.map(productImageEntity,
-                            ProductImageResponseDto.class);
+            listProductImageResponseDto.add(productImageResponseDto);
 
-                    listProductImageResponseDto.add(productImageResponseDto);
-                } catch (Exception e) {
-                    throw new RuntimeException("Could not store the file" + file.getOriginalFilename() + ". Error: " +
-                            e.getMessage());
-                }
-                fileNames.add(fileName);
-            });
+        });
 
-            message = "Uploaded the files successfully: " + fileNames;
             return ResponseEntity.status(HttpStatus.OK).body(new UploadImageResponseDto(listProductImageResponseDto));
-
     }
 
     @Override

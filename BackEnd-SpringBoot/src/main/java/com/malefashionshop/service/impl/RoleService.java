@@ -1,17 +1,15 @@
 package com.malefashionshop.service.impl;
 
-import com.malefashionshop.dto.request.AdminUpdateDto;
 import com.malefashionshop.dto.request.RoleUpdateDto;
-import com.malefashionshop.dto.response.AdminResponseDto;
 import com.malefashionshop.dto.response.ResponseDto;
 import com.malefashionshop.dto.response.RoleResponseDto;
-import com.malefashionshop.entities.AdminEntity;
 import com.malefashionshop.entities.RoleEntity;
+import com.malefashionshop.entities.SizeEntity;
+import com.malefashionshop.entities.enums.ERole;
+import com.malefashionshop.exceptions.DataConstrainConflictException;
 import com.malefashionshop.exceptions.ResourceNotFoundException;
-import com.malefashionshop.mappers.AdminEntityAndAdminResponseDtoMapper;
-import com.malefashionshop.repository.AdminRepository;
+import com.malefashionshop.mappers.RoleEntityAndRoleResponseDtoMapper;
 import com.malefashionshop.repository.RoleRepository;
-import com.malefashionshop.service.IAdminService;
 import com.malefashionshop.service.IRoleService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +26,8 @@ public class RoleService implements IRoleService {
 
     @Autowired
     RoleRepository roleRepository;
+    @Autowired
+    RoleEntityAndRoleResponseDtoMapper roleEntityAndRoleResponseDtoMapper;
 
     @Override
     public List<RoleResponseDto> getAllRoles() {
@@ -35,7 +35,7 @@ public class RoleService implements IRoleService {
         List<RoleResponseDto> listRoleResponseDto = new ArrayList<>();
         listRoleEntity.forEach(roleEntity->{
             RoleResponseDto roleResponseDto = new RoleResponseDto();
-            BeanUtils.copyProperties(roleEntity, roleResponseDto);
+            this.roleEntityAndRoleResponseDtoMapper.map(roleEntity, roleResponseDto);
             listRoleResponseDto.add(roleResponseDto);
         });
         return listRoleResponseDto;
@@ -43,13 +43,19 @@ public class RoleService implements IRoleService {
 
     @Override
     public RoleResponseDto createRole(RoleUpdateDto dto) {
+
+//        RoleEntity existRoleEntity = this.roleRepository.findByName(dto.getName());
+//        if(existRoleEntity != null){
+//            throw new DataConstrainConflictException("Size name " +dto.getName()+ " is already exist");
+//        }
+
         RoleEntity roleEntity = new RoleEntity();
-        BeanUtils.copyProperties(dto,roleEntity);
+        this.roleEntityAndRoleResponseDtoMapper.map(dto, roleEntity);
 
         this.roleRepository.save(roleEntity);
 
         RoleResponseDto roleResponseDto = new RoleResponseDto();
-        BeanUtils.copyProperties(roleEntity,roleResponseDto);
+        this.roleEntityAndRoleResponseDtoMapper.map(roleEntity, roleResponseDto);
 
         return roleResponseDto;
     }
@@ -61,13 +67,12 @@ public class RoleService implements IRoleService {
             throw new ResourceNotFoundException("Role with ID: " +id+ "can be not found");
         }
 
-        optionalRoleEntity.get().setName(dto.getName());
+       this.roleEntityAndRoleResponseDtoMapper.map(dto, optionalRoleEntity.get());
 
         this.roleRepository.save(optionalRoleEntity.get());
 
         RoleResponseDto roleResponseDto = new RoleResponseDto();
-        roleResponseDto.setId(optionalRoleEntity.get().getId());
-        roleResponseDto.setName(optionalRoleEntity.get().getName());
+        this.roleEntityAndRoleResponseDtoMapper.map(optionalRoleEntity.get(), roleResponseDto);
 
         return roleResponseDto;
     }

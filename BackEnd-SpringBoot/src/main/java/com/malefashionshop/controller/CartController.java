@@ -10,6 +10,7 @@ import com.malefashionshop.service.impl.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -44,7 +45,7 @@ public class CartController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseDto> deleteCategory(@PathVariable Long id) {
+    public ResponseEntity<ResponseDto> deleteCart(@PathVariable Long id) {
         return this.cartService.deleteCart(id);
     }
 }
