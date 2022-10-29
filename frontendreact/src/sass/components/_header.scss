@@ -1,0 +1,21 @@
+.header {
+    background-color: $main-bg;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 99;
+    height: $header-height;
+    transition: height 0.3s ease;
+
+    &__logo {
+        @include flex(center, center);
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+
+        img {
+            height: 28px;
+        }
+    }
+}
