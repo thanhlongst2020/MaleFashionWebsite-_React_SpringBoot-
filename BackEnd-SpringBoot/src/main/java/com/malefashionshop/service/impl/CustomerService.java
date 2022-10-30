@@ -14,6 +14,7 @@ import com.malefashionshop.repository.CategoryRepository;
 import com.malefashionshop.repository.CustomerRepository;
 import com.malefashionshop.service.ICategoryService;
 import com.malefashionshop.service.ICustomerService;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +27,23 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CustomerService implements ICustomerService {
+
     @Autowired
     CustomerRepository customerRepository;
     @Autowired
     CustomerEntityAndCustomerResponseDtoMapper customerEntityAndResponseDtoMapper;
+
+    public CustomerService(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
+    }
+
+    public CustomerService(CustomerRepository customerRepository,
+                           CustomerEntityAndCustomerResponseDtoMapper customerMapper) {
+        this.customerRepository = customerRepository;
+        this.customerEntityAndResponseDtoMapper = customerMapper;
+    }
 
     @Override
     public List<CustomerResponseDto> getAllCustomers() {
@@ -39,7 +52,7 @@ public class CustomerService implements ICustomerService {
         listCustomerEntity.forEach(customerEntity->{
             CustomerResponseDto customerResponseDto = new CustomerResponseDto();
             BeanUtils.copyProperties(customerEntity,customerResponseDto);
-            this.customerEntityAndResponseDtoMapper.map(customerEntity,customerResponseDto);
+            customerEntityAndResponseDtoMapper.map(customerEntity,customerResponseDto);
             listCustomerResponseDto.add(customerResponseDto);
         });
         return listCustomerResponseDto;
@@ -47,15 +60,14 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public CustomerResponseDto createCustomer(CustomerUpdateDto dto) {
-        CustomerEntity customerEntity = new CustomerEntity();
 
-        this.customerEntityAndResponseDtoMapper.map(dto, customerEntity);
+        CustomerEntity customerEntity = customerEntityAndResponseDtoMapper.map(dto);
+
         customerEntity.setDeleteEnum(DeleteEnum.ACTIVE);
 
-        this.customerRepository.save(customerEntity);
+        customerRepository.save(customerEntity);
 
-        CustomerResponseDto customerResponseDto = new CustomerResponseDto();
-        this.customerEntityAndResponseDtoMapper.map(customerEntity, customerResponseDto);
+        CustomerResponseDto customerResponseDto = customerEntityAndResponseDtoMapper.map(customerEntity);
 
         return customerResponseDto;
     }
@@ -71,7 +83,8 @@ public class CustomerService implements ICustomerService {
         this.customerRepository.save(optionalCustomerEntity.get());
 
         CustomerResponseDto customerResponseDto = new CustomerResponseDto();
-        this.customerEntityAndResponseDtoMapper.map(optionalCustomerEntity.get(), customerResponseDto);
+//        this.customerEntityAndResponseDtoMapper.map(optionalCustomerEntity.get(), customerResponseDto);
+        customerResponseDto = customerEntityAndResponseDtoMapper.map(optionalCustomerEntity.get());
 
         return customerResponseDto;
     }

@@ -42,4 +42,35 @@ public class CustomerEntityAndCustomerResponseDtoMapper {
         }
 
     }
+
+    public CustomerResponseDto map(CustomerEntity customerEntity) {
+        CustomerResponseDto customerResponseDto = new CustomerResponseDto();
+
+        BeanUtils.copyProperties(customerEntity, customerResponseDto);
+        if(customerEntity.getRole() == null){
+            customerResponseDto.setRoleName(null);
+        } else{
+            customerResponseDto.setRoleName(customerEntity.getRole().getName().name());
+        }
+
+        return customerResponseDto;
+    }
+
+    public CustomerEntity map(CustomerUpdateDto customerUpdateDto) {
+        CustomerEntity customerEntity = new CustomerEntity();
+
+        BeanUtils.copyProperties(customerUpdateDto, customerEntity);
+
+        if(customerUpdateDto.getRoleID() == null){
+            customerEntity.setRole(null);
+        } else{
+            Optional<RoleEntity> optionalRoleEntity = this.roleRepository.findById(customerUpdateDto.getRoleID());
+            if(optionalRoleEntity.isEmpty()){
+                throw new ResourceNotFoundException("Role with ID: "+customerUpdateDto.getRoleID()+"can be not found");
+            }
+            customerEntity.setRole(optionalRoleEntity.get());
+        }
+
+        return customerEntity;
+    }
 }

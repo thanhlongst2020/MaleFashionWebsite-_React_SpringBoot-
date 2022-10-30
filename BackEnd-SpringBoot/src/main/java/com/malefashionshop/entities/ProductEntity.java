@@ -1,18 +1,17 @@
 package com.malefashionshop.entities;
 
 import com.malefashionshop.entities.enums.DeleteEnum;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Builder(toBuilder = true)
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name="product")
 public class ProductEntity extends BaseEntity{

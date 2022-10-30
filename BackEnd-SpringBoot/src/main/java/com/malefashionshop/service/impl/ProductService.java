@@ -6,6 +6,7 @@ import com.malefashionshop.dto.response.ProductResponseDto;
 import com.malefashionshop.dto.response.ResponseDto;
 import com.malefashionshop.entities.*;
 import com.malefashionshop.entities.enums.DeleteEnum;
+import com.malefashionshop.exceptions.NotFoundException;
 import com.malefashionshop.exceptions.ResourceNotFoundException;
 import com.malefashionshop.mappers.ProductEntityAndProductResponseDtoMapper;
 import com.malefashionshop.repository.*;
@@ -34,6 +35,10 @@ public class ProductService implements IProductService {
     @Autowired
     private ProductEntityAndProductResponseDtoMapper productEntityAndProductResponseDtoMapper;
 
+    public ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
+
     @Override
     public List<ProductResponseDto> getAllProducts() {
 
@@ -55,7 +60,7 @@ public class ProductService implements IProductService {
 
         Optional<ProductEntity> optionalProductEntity = this.productRepository.findById(id);
         if(optionalProductEntity.isEmpty()){
-            throw new ResourceNotFoundException("Product Not Found");
+            throw new NotFoundException("Product Not Found");
         }
 
         ProductResponseDto customProductResponseDto =  new ProductResponseDto();
