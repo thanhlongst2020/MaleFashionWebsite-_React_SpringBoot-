@@ -35,10 +35,6 @@ public class CustomerService implements ICustomerService {
     @Autowired
     CustomerEntityAndCustomerResponseDtoMapper customerEntityAndResponseDtoMapper;
 
-    public CustomerService(CustomerRepository customerRepository) {
-        this.customerRepository = customerRepository;
-    }
-
     public CustomerService(CustomerRepository customerRepository,
                            CustomerEntityAndCustomerResponseDtoMapper customerMapper) {
         this.customerRepository = customerRepository;
@@ -47,7 +43,7 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public List<CustomerResponseDto> getAllCustomers() {
-        List<CustomerEntity> listCustomerEntity = this.customerRepository.findAllByDeleteEnum(DeleteEnum.ACTIVE);
+        List<CustomerEntity> listCustomerEntity = customerRepository.findAllByDeleteEnum(DeleteEnum.ACTIVE);
         return customerEntityAndResponseDtoMapper.toCustomerResponseDtoList(listCustomerEntity);
     }
 

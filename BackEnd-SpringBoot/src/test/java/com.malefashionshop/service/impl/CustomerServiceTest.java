@@ -3,21 +3,16 @@ package com.malefashionshop.service.impl;
 import com.malefashionshop.dto.request.CustomerUpdateDto;
 import com.malefashionshop.dto.response.CustomerResponseDto;
 import com.malefashionshop.entities.CustomerEntity;
-import com.malefashionshop.entities.ProductEntity;
 import com.malefashionshop.entities.enums.DeleteEnum;
-import com.malefashionshop.exceptions.NotFoundException;
 import com.malefashionshop.exceptions.ResourceNotFoundException;
 import com.malefashionshop.mappers.CustomerEntityAndCustomerResponseDtoMapper;
 import com.malefashionshop.repository.CustomerRepository;
-import com.malefashionshop.repository.ProductRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,32 +41,21 @@ class CustomerServiceTest {
 
         expectedCustomer = CustomerResponseDto.builder().id(1L).name("name").email("email").phoneNumber("phoneNumber")
                 .address("address").roleName("roleName").build();
-
     }
 
-//    @Test
-//    void getAllCustomers_ShouldReturnListCustomerResponseDto_WhenDataValid() {
-//        List<CustomerEntity> listCustomerEntity = new ArrayList<>();
-//
-//        CustomerEntity customerEntity1 = mock(CustomerEntity.class);
-//        CustomerEntity customerEntity2 = mock(CustomerEntity.class);
-//
-//        listCustomerEntity.add(customerEntity1);
-//        listCustomerEntity.add(customerEntity2);
-//
-//        List<CustomerResponseDto> listCustomerResponseDto = new ArrayList<>();
-//
-//        listCustomerEntity.forEach(customerEntity->{
-//            ArgumentCaptor<CustomerResponseDto> customerEntityCaptor = ArgumentCaptor.forClass(CustomerResponseDto.class);
-//            verify(customerMapper).map(customerEntity, customerEntityCaptor.capture());
-//            listCustomerResponseDto.add(customerEntityCaptor.getValue());
-//        });
-//
-//        List<CustomerResponseDto> results = customerService.getAllCustomers();
-//
-//        assertEquals(listCustomerResponseDto, results);
-//
-//    }
+    @Test
+    void getAllCustomers_ShouldReturnListCustomerResponseDto_WhenDataValid() {
+        List<CustomerEntity> customerEntities = mock(List.class);
+        List<CustomerResponseDto> customerResponseDtoes = mock(List.class);
+
+        when(customerRepository.findAllByDeleteEnum(DeleteEnum.ACTIVE)).thenReturn(customerEntities);
+        when(customerMapper.toCustomerResponseDtoList(customerEntities)).thenReturn(customerResponseDtoes);
+
+        List<CustomerResponseDto> results = customerService.getAllCustomers();
+
+        assertEquals(customerResponseDtoes, results);
+
+    }
 
     @Test
     void createCustomer_ShouldReturnCustomerResponseDto_WhenDataValid() {
@@ -80,8 +64,6 @@ class CustomerServiceTest {
 
         customerEntity = mock(CustomerEntity.class);
         when(customerMapper.map(customerUpdateDto)).thenReturn(customerEntity);
-//        verify(customerEntity).setDeleteEnum(DeleteEnum.ACTIVE);
-//        verify(customerRepository).save(customerEntity);
 
         when(customerMapper.map(customerEntity)).thenReturn(expectedCustomer);
 
@@ -111,8 +93,6 @@ class CustomerServiceTest {
                 .phoneNumber("phoneNumberUpdate").address("addressUpdate").roleID(1L).build();
 
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(customerEntity));
-
-//        when(customerRepository.save(customerEntity)).thenReturn(customerEntity);
 
         when(customerMapper.map(Optional.of(customerEntity).get())).thenReturn(expectedCustomer);
 
