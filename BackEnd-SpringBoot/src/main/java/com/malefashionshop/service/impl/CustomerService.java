@@ -48,14 +48,7 @@ public class CustomerService implements ICustomerService {
     @Override
     public List<CustomerResponseDto> getAllCustomers() {
         List<CustomerEntity> listCustomerEntity = this.customerRepository.findAllByDeleteEnum(DeleteEnum.ACTIVE);
-        List<CustomerResponseDto> listCustomerResponseDto = new ArrayList<>();
-        listCustomerEntity.forEach(customerEntity->{
-            CustomerResponseDto customerResponseDto = new CustomerResponseDto();
-            BeanUtils.copyProperties(customerEntity,customerResponseDto);
-            customerEntityAndResponseDtoMapper.map(customerEntity,customerResponseDto);
-            listCustomerResponseDto.add(customerResponseDto);
-        });
-        return listCustomerResponseDto;
+        return customerEntityAndResponseDtoMapper.toCustomerResponseDtoList(listCustomerEntity);
     }
 
     @Override
